@@ -3,7 +3,7 @@ package watson.model;
 /**
  * Created by jamesweaver on 8/12/16.
  */
-public class DevoxxPayload {
+public class DevoxxDocument {
   private String id;
   private String label;
   private String score;
@@ -16,10 +16,10 @@ public class DevoxxPayload {
   private String thumbnail;
   private String thumbnailKeywords;
 
-  public DevoxxPayload() {
+  public DevoxxDocument() {
   }
 
-  public DevoxxPayload(String id, String label, String score, String authors, String emotions, String language, String link, String publicationDate, String sentiment, String thumbnail, String thumbnailKeywords) {
+  public DevoxxDocument(String id, String label, String score, String authors, String emotions, String language, String link, String publicationDate, String sentiment, String thumbnail, String thumbnailKeywords) {
     this.id = id;
     this.label = label;
     this.score = score;
@@ -123,7 +123,7 @@ public class DevoxxPayload {
 
   @Override
   public String toString() {
-    return "DevoxxPayload{" +
+    return "DevoxxDocument{" +
         "id='" + id + '\'' +
         ", label='" + label + '\'' +
         ", score='" + score + '\'' +

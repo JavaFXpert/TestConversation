@@ -17,13 +17,16 @@ public class TestConversation {
   public static void main(String args[]) {
     //String text = "How many legs does a dog have?";
     //String text = "Why is there air?";
-    String text = "what is a rock?";
+    //String text = "what is a rock?";
+    //String text = "What are the best ways to use lambda expressions in JavaFX application?";
+    String text = "lambda expressions";
 
     CallCorpus callCorpus = new CallCorpus();
 
     MessageRequest request = new MessageRequest.Builder().inputText(text).build();
     String payload = GsonSingleton.getGsonWithoutPrettyPrinting().toJson(request, MessageRequest.class);
     InputStream inputStream = new ByteArrayInputStream(payload.getBytes());
+
     Response jaxResponse = callCorpus.postMessage(WORKSPACE_ID, inputStream);
     MessageResponse serviceResponse = GsonSingleton.getGsonWithoutPrettyPrinting()
         .fromJson(jaxResponse.getEntity().toString(), MessageResponse.class);
