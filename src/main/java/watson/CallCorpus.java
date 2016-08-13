@@ -136,24 +136,26 @@ import watson.model.DevoxxDocument;
 
         System.out.println("spaceDelimited: \"" + spaceDelimited + "\"");
 
-        payload = retrieveDocument(spaceDelimited);
+        if (spaceDelimited != null && spaceDelimited.trim().length() != 0) {
+          payload = retrieveDocument(spaceDelimited);
 
-        // For this app, both the original conversation response and the retrieve and rank response
-        // are sent to the UI. Extract and add the conversational response to the ultimate response
-        // we will send to the user. The UI will process this response and show the top 5 retrieve
-        // and rank answers to the user in the main UI. The JSON response section of the UI will
-        // show information from the calls to both services.
-        Map<String, Object> output = response.getOutput();
-        if (output == null) {
-          output = new HashMap<String, Object>();
-          response.setOutput(output);
+          // For this app, both the original conversation response and the retrieve and rank response
+          // are sent to the UI. Extract and add the conversational response to the ultimate response
+          // we will send to the user. The UI will process this response and show the top 5 retrieve
+          // and rank answers to the user in the main UI. The JSON response section of the UI will
+          // show information from the calls to both services.
+          Map<String, Object> output = response.getOutput();
+          if (output == null) {
+            output = new HashMap<String, Object>();
+            response.setOutput(output);
+          }
+          // Send the user's question to the retrieve and rank service
+          //List<DocumentPayload> docs = retrieveAndRankClient.getDocuments(query);
+
+          // Append the retrieve and rank answers to the output object that will be sent to the UI
+          output.put("DevoxxPayload", payload); //$NON-NLS-1$
+          System.out.println("response.getOutput():\n" + response.getOutput());
         }
-        // Send the user's question to the retrieve and rank service
-        //List<DocumentPayload> docs = retrieveAndRankClient.getDocuments(query);
-
-        // Append the retrieve and rank answers to the output object that will be sent to the UI
-        output.put("DevoxxPayload", payload); //$NON-NLS-1$
-
       }
       else {
         String query = response.getInputText();
@@ -178,7 +180,8 @@ import watson.model.DevoxxDocument;
       response = getWatsonResponse(request, id);
 
     } catch (Exception e) {
-      System.out.println("Something is terribly wrong");
+      System.out.println("Something is terribly wrong: " + e);
+      e.printStackTrace();
     }
     Response retVal = Response.ok(new Gson().toJson(response, MessageResponse.class)).type(MediaType.APPLICATION_JSON).build();
     //System.out.println("retval.toString(): " + retVal.toString());
@@ -201,86 +204,90 @@ import watson.model.DevoxxDocument;
     LOGGER.info(doc.text());
 
     final JsonElement jsonElement = new JsonParser().parse(doc.text());
-    final JsonArray jsonArray = jsonElement.getAsJsonArray();
-    Iterator iterator = jsonArray.iterator();
-    while (iterator.hasNext()) {
-      JsonObject jsonObject = (JsonObject)iterator.next();
 
-      DevoxxDocument devoxxDocument = new DevoxxDocument();
+    if (jsonElement != null && jsonElement.isJsonArray()) {
+      final JsonArray jsonArray = jsonElement.getAsJsonArray();
 
-      // Get the id
-      if (jsonObject.has("id")) {
-        devoxxDocument.setId(jsonObject.get("id").toString());
-        System.out.println("id: " + devoxxDocument.getId());
+      Iterator iterator = jsonArray.iterator();
+      while (iterator.hasNext()) {
+        JsonObject jsonObject = (JsonObject) iterator.next();
+
+        DevoxxDocument devoxxDocument = new DevoxxDocument();
+
+        // Get the id
+        if (jsonObject.has("id")) {
+          devoxxDocument.setId(jsonObject.get("id").toString());
+          System.out.println("id: " + devoxxDocument.getId());
+        }
+
+        // Get the label
+        if (jsonObject.has("label")) {
+          devoxxDocument.setLabel(jsonObject.get("label").toString());
+          System.out.println("label: " + devoxxDocument.getLabel());
+        }
+
+        // Get the score
+        if (jsonObject.has("score")) {
+          devoxxDocument.setScore(jsonObject.get("score").toString());
+          System.out.println("score: " + devoxxDocument.getScore());
+        }
+
+        // Get the elements in userFields
+        if (jsonObject.has("userFields")) {
+          JsonObject userFields = (JsonObject) jsonObject.get("userFields");
+
+          // Get the authors
+          if (userFields.has("authors")) {
+            devoxxDocument.setAuthors(userFields.get("authors").toString());
+            System.out.println("authors: " + devoxxDocument.getAuthors());
+          }
+
+          // Get the emotions
+          if (userFields.has("emotions")) {
+            devoxxDocument.setEmotions(userFields.get("emotions").toString());
+            System.out.println("emotions: " + devoxxDocument.getEmotions());
+          }
+
+          // Get the language
+          if (userFields.has("language")) {
+            devoxxDocument.setLanguage(userFields.get("language").toString());
+            System.out.println("language: " + devoxxDocument.getLanguage());
+          }
+
+          // Get the link
+          if (userFields.has("link")) {
+            devoxxDocument.setLink(userFields.get("link").toString());
+            System.out.println("link: " + devoxxDocument.getLink());
+          }
+
+          // Get the publicationDate
+          if (userFields.has("publicationDate")) {
+            devoxxDocument.setPublicationDate(userFields.get("publicationDate").toString());
+            System.out.println("publicationDate: " + devoxxDocument.getPublicationDate());
+          }
+
+          // Get the sentiment
+          if (userFields.has("sentiment")) {
+            devoxxDocument.setSentiment(userFields.get("sentiment").toString());
+            System.out.println("sentiment: " + devoxxDocument.getSentiment());
+          }
+
+          // Get the thumbnail
+          if (userFields.has("thumbnail")) {
+            devoxxDocument.setThumbnail(userFields.get("thumbnail").toString());
+            System.out.println("thumbnail: " + devoxxDocument.getThumbnail());
+          }
+
+          // Get the thumbnailKeywords
+          if (userFields.has("thumbnailKeywords")) {
+            devoxxDocument.setThumbnailKeywords(userFields.get("thumbnailKeywords").toString());
+            System.out.println("thumbnailKeywords: " + devoxxDocument.getThumbnailKeywords());
+          }
+
+        }
+
+        devoxxPayload.add(devoxxDocument);
       }
-
-      // Get the label
-      if (jsonObject.has("label")) {
-        devoxxDocument.setLabel(jsonObject.get("label").toString());
-        System.out.println("label: " + devoxxDocument.getLabel());
-      }
-
-      // Get the score
-      if (jsonObject.has("score")) {
-        devoxxDocument.setScore(jsonObject.get("score").toString());
-        System.out.println("score: " + devoxxDocument.getScore());
-      }
-
-      // Get the elements in userFields
-      if (jsonObject.has("userFields")) {
-        JsonObject userFields = (JsonObject) jsonObject.get("userFields");
-
-        // Get the authors
-        if (userFields.has("authors")) {
-          devoxxDocument.setAuthors(userFields.get("authors").toString());
-          System.out.println("authors: " + devoxxDocument.getAuthors());
-        }
-
-        // Get the emotions
-        if (userFields.has("emotions")) {
-          devoxxDocument.setEmotions(userFields.get("emotions").toString());
-          System.out.println("emotions: " + devoxxDocument.getEmotions());
-        }
-
-        // Get the language
-        if (userFields.has("language")) {
-          devoxxDocument.setLanguage(userFields.get("language").toString());
-          System.out.println("language: " + devoxxDocument.getLanguage());
-        }
-
-        // Get the link
-        if (userFields.has("link")) {
-          devoxxDocument.setLink(userFields.get("link").toString());
-          System.out.println("link: " + devoxxDocument.getLink());
-        }
-
-        // Get the publicationDate
-        if (userFields.has("publicationDate")) {
-          devoxxDocument.setPublicationDate(userFields.get("publicationDate").toString());
-          System.out.println("publicationDate: " + devoxxDocument.getPublicationDate());
-        }
-
-        // Get the sentiment
-        if (userFields.has("sentiment")) {
-          devoxxDocument.setSentiment(userFields.get("sentiment").toString());
-          System.out.println("sentiment: " + devoxxDocument.getSentiment());
-        }
-
-        // Get the thumbnail
-        if (userFields.has("thumbnail")) {
-          devoxxDocument.setThumbnail(userFields.get("thumbnail").toString());
-          System.out.println("thumbnail: " + devoxxDocument.getThumbnail());
-        }
-
-        // Get the thumbnailKeywords
-        if (userFields.has("thumbnailKeywords")) {
-          devoxxDocument.setThumbnailKeywords(userFields.get("thumbnailKeywords").toString());
-          System.out.println("thumbnailKeywords: " + devoxxDocument.getThumbnailKeywords());
-        }
-
-      }
-
-      devoxxPayload.add(devoxxDocument);
     }
     return devoxxPayload;
 
@@ -316,18 +323,19 @@ import watson.model.DevoxxDocument;
 
     final JsonElement element = new JsonParser().parse(doc.text());
 
-    JsonArray array = element.getAsJsonObject().get(KEYWORDS).getAsJsonArray();
+    if (element != null && element.isJsonObject()) {
+      JsonArray array = element.getAsJsonObject().get(KEYWORDS).getAsJsonArray();
 
-    for (final JsonElement keywordElement : array) {
-      String label = keywordElement.getAsJsonObject().get("text").getAsString();
-      String[] tokens = label.split(" ");
-      for (String token : tokens) {
-        if (!keywords.contains(token)) {
-          keywords.add(token);
+      for (final JsonElement keywordElement : array) {
+        String label = keywordElement.getAsJsonObject().get("text").getAsString();
+        String[] tokens = label.split(" ");
+        for (String token : tokens) {
+          if (!keywords.contains(token)) {
+            keywords.add(token);
+          }
         }
       }
     }
-    //Collections.sort(keywords);
     return keywords;
   }
 

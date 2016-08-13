@@ -18,8 +18,9 @@ public class TestConversation {
     //String text = "How many legs does a dog have?";
     //String text = "Why is there air?";
     //String text = "what is a rock?";
-    //String text = "What are the best ways to use lambda expressions in JavaFX application?";
-    String text = "lambda expressions";
+    String text = "What is a JavaFX application?";
+    //String text = "What is an angular application?";
+    //String text = "lambda expressions";
 
     CallCorpus callCorpus = new CallCorpus();
 
