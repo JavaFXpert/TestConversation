@@ -15,9 +15,9 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageRequest;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse;
+import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.util.GsonSingleton;
 import watson.model.DevoxxDocument;
 
@@ -41,10 +41,9 @@ import watson.model.DevoxxDocument;
 
   public class CallCorpus {
     private static final String SEARCH_REST_ENDPOINT = "http://sherlock.devoxx.com/api/search/";
-    private static String API_VERSION = "v1-experimental";
-    private static String PASSWORD = "Y8gUTfOHTB2b";
-    private static String URL = "https://gateway.watsonplatform.net/conversation-experimental/api";
-    private static String USERNAME = "371ffd54-0cab-49bd-b555-7b9320234ada";
+    private static String PASSWORD = "3EcINlm1GczO";
+    private static String URL = "https://gateway.watsonplatform.net/conversation/api";
+    private static String USERNAME = "76df0216-0b65-4b2a-a16a-f5ee57f455be";
 
     private static final int TIMEOUT_IN_MILLIS = 15000;
     private static final String OUTPUT_MODE = "outputMode";
@@ -114,7 +113,7 @@ import watson.model.DevoxxDocument;
       // Configure the Watson Developer Cloud SDK to make a call to the appropriate conversation
       // service. Specific information is obtained from the VCAP_SERVICES environment variable
       ConversationService service =
-          new ConversationService(API_VERSION != null ? API_VERSION : ConversationService.VERSION_DATE_2016_05_19);
+          new ConversationService(ConversationService.VERSION_DATE_2016_07_11);
       if (USERNAME != null || PASSWORD != null) {
         service.setUsernameAndPassword(USERNAME, PASSWORD);
       }
